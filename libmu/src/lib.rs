@@ -1,4 +1,5 @@
+#![no_std]
+
 mod maths;
 
-pub use maths::complex;
-pub use maths::numeric_types;
+pub use maths::*;
