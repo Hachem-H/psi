@@ -1,6 +1,13 @@
 use crate::numeric_types::Float;
 use core::{fmt, ops};
 
+#[macro_export]
+macro_rules! complex {
+    ($real:expr, $imaginary:expr) => {
+        $crate::Complex::new($real, $imaginary)
+    };
+}
+
 #[derive(Copy, Clone, PartialOrd, PartialEq)]
 pub struct Complex<T: Float> {
     pub real: T,
@@ -29,7 +36,10 @@ impl<T: Float> Complex<T> {
     }
 
     pub fn get_conjugate(&self) -> Complex<T> {
-        Complex::new(self.real, -self.imaginary)
+        Complex {
+            real: self.real,
+            imaginary: -self.imaginary,
+        }
     }
 
     pub fn conjugate(&mut self) {
