@@ -1,7 +1,7 @@
 use crate::numeric_types::Float;
 use core::{fmt, ops};
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialOrd, PartialEq)]
 pub struct Complex<T: Float> {
     pub real: T,
     pub imaginary: T,
@@ -46,6 +46,17 @@ impl<T: Float> Complex<T> {
 
     pub fn abs(&self) -> T {
         T::sqrt(self.norm())
+    }
+}
+
+impl<T: Float> ops::Neg for Complex<T> {
+    type Output = Complex<T>;
+
+    fn neg(self) -> Complex<T> {
+        Complex {
+            real: -self.real,
+            imaginary: -self.imaginary,
+        }
     }
 }
 
