@@ -1,4 +1,4 @@
-use crate::numeric_types::Float;
+use crate::Float;
 use core::{fmt, ops};
 
 #[macro_export]

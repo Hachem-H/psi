@@ -1,36 +1,27 @@
+// TODO(Hachem): Refactor
+
 use super::Float;
 use core::{fmt, ops};
 
 #[macro_export]
 macro_rules! matrix {
-    ($( $( $x:expr ),* );* ) => {{
-        let data = vec![
-            $(
-                $(
-                    $x,
-                )*
-            )*
-        ];
+    ( $( $( $x:expr ),* );* ) => {{
+        let mut data = Vec::new();
+        let mut rows = 0;
+        let mut cols = 0;
 
-        let rows = <[()]>::len(&[$( $crate::count_items!($($x),*) ),*]);
-        let cols = $crate::count_items!($($x),*);
+        $(
+            let row_data = $( $x )*;
+            if cols == 0 {
+                cols = row_data.len();
+            }
+            assert_eq!(cols, row_data.len(), "All rows must have the same number of columns.");
+            data.extend(row_data);
+            rows += 1;
+        )*
 
         $crate::Matrix::new(rows, cols, data)
     }};
-}
-
-#[macro_export]
-macro_rules! count_items {
-    ($($item:expr),*) => {
-        <[()]>::len(&[$( $crate::replace_expr!($item ())),*])
-    };
-}
-
-#[macro_export]
-macro_rules! replace_expr {
-    ($_t:tt $sub:expr) => {
-        $sub
-    };
 }
 
 pub struct Matrix<T: Float> {

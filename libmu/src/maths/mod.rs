@@ -6,4 +6,3 @@ pub mod vector;
 pub use complex::*;
 pub use matrix::*;
 pub use numeric_types::*;
-pub use vector::*;

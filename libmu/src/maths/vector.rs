@@ -1,5 +1,8 @@
+// TODO(Hachem): Operators Matrix/Vector don't work
+// TODO(Hachem): Refactor
+
 use super::{Float, Matrix};
-use core::ops;
+use core::{fmt, ops};
 
 #[macro_export]
 macro_rules! row_vector {
@@ -328,5 +331,45 @@ impl<T: Float> ops::MulAssign<&Matrix<T>> for ColumnVector<T> {
         if let Some(result) = self.mul_matrix(matrix) {
             *self = result;
         }
+    }
+}
+
+impl<T: Float + fmt::Debug> fmt::Debug for RowVector<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "RowVector({:?})", self.0)
+    }
+}
+
+impl<T: Float + fmt::Debug> fmt::Debug for ColumnVector<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "ColumnVector({:?})", self.0)
+    }
+}
+
+impl<T: Float + fmt::Display> fmt::Display for RowVector<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "[{}]",
+            self.0
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<String>>()
+                .join(", ")
+        )
+    }
+}
+
+impl<T: Float + fmt::Display> fmt::Display for ColumnVector<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "[{}]",
+            self.0
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<String>>()
+                .join(", ")
+        )
     }
 }
