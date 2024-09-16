@@ -2,9 +2,9 @@ use super::Float;
 use core::{fmt, ops};
 
 pub struct Matrix<T: Float> {
-    data: Vec<T>,
-    rows: usize,
-    cols: usize,
+    pub data: Vec<T>,
+    pub rows: usize,
+    pub cols: usize,
 }
 
 impl<T: Float> Matrix<T> {
