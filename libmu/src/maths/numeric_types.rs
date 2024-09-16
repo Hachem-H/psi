@@ -1,6 +1,5 @@
-use core::ops;
-
 use super::Complex;
+use core::ops;
 
 pub trait Numeric:
     Copy
