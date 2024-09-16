@@ -1,6 +1,38 @@
 use super::Float;
 use core::{fmt, ops};
 
+#[macro_export]
+macro_rules! matrix {
+    ($( $( $x:expr ),* );* ) => {{
+        let data = vec![
+            $(
+                $(
+                    $x,
+                )*
+            )*
+        ];
+
+        let rows = <[()]>::len(&[$( $crate::count_items!($($x),*) ),*]);
+        let cols = $crate::count_items!($($x),*);
+
+        $crate::Matrix::new(rows, cols, data)
+    }};
+}
+
+#[macro_export]
+macro_rules! count_items {
+    ($($item:expr),*) => {
+        <[()]>::len(&[$( $crate::replace_expr!($item ())),*])
+    };
+}
+
+#[macro_export]
+macro_rules! replace_expr {
+    ($_t:tt $sub:expr) => {
+        $sub
+    };
+}
+
 pub struct Matrix<T: Float> {
     pub data: Vec<T>,
     pub rows: usize,

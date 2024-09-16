@@ -1,7 +1,25 @@
-// TODO(Hachem): matrix multiplication with vector
-
 use super::{Float, Matrix};
 use core::ops;
+
+#[macro_export]
+macro_rules! row_vector {
+    ($($x:expr),*) => {
+        RowVector::new(vec![$($x),*])
+    };
+    ($($x:expr,)*) => {
+        RowVector::new(vec![$($x),*])
+    };
+}
+
+#[macro_export]
+macro_rules! column_vector {
+    ($($x:expr),*) => {
+        ColumnVector::new(vec![$($x),*])
+    };
+    ($($x:expr,)*) => {
+        ColumnVector::new(vec![$($x),*])
+    };
+}
 
 pub trait Vector<T: Float> {
     fn new(data: Vec<T>) -> Self;
@@ -27,12 +45,48 @@ pub type RowVector<T> = VectorImpl<T, 1, 0>;
 pub type ColumnVector<T> = VectorImpl<T, 0, 1>;
 
 impl<T: Float> ColumnVector<T> {
+    pub fn mul_matrix(&self, matrix: &Matrix<T>) -> Option<ColumnVector<T>> {
+        if matrix.cols != self.size() {
+            return None;
+        }
+
+        let mut result = ColumnVector::new(vec![T::zero(); matrix.rows]);
+
+        for i in 0..matrix.rows {
+            let mut sum = T::zero();
+            for j in 0..matrix.cols {
+                sum = sum + (matrix.get(i, j) * self.get(j));
+            }
+            result.set(i, sum);
+        }
+
+        Some(result)
+    }
+
     pub fn transpose(&self) -> RowVector<T> {
         RowVector::new(self.0.clone())
     }
 }
 
 impl<T: Float> RowVector<T> {
+    pub fn mul_matrix(&self, matrix: &Matrix<T>) -> Option<RowVector<T>> {
+        if self.size() != matrix.rows {
+            return None;
+        }
+
+        let mut result = RowVector::new(vec![T::zero(); matrix.cols]);
+
+        for j in 0..matrix.cols {
+            let mut sum = T::zero();
+            for i in 0..matrix.rows {
+                sum = sum + (self.get(i) * matrix.get(i, j));
+            }
+            result.set(j, sum);
+        }
+
+        Some(result)
+    }
+
     pub fn transpose(&self) -> ColumnVector<T> {
         ColumnVector::new(self.0.clone())
     }
@@ -242,5 +296,37 @@ impl<T: Float> VectorMatrix<T> for ColumnVector<T> {
 
     fn from_matrix(matrix: &Matrix<T>) -> Self {
         Self::new(matrix.data.clone())
+    }
+}
+
+impl<T: Float> ops::Mul<&Matrix<T>> for RowVector<T> {
+    type Output = Option<RowVector<T>>;
+
+    fn mul(self, matrix: &Matrix<T>) -> Self::Output {
+        self.mul_matrix(matrix)
+    }
+}
+
+impl<T: Float> ops::Mul<&Matrix<T>> for ColumnVector<T> {
+    type Output = Option<ColumnVector<T>>;
+
+    fn mul(self, matrix: &Matrix<T>) -> Self::Output {
+        self.mul_matrix(matrix)
+    }
+}
+
+impl<T: Float> ops::MulAssign<&Matrix<T>> for RowVector<T> {
+    fn mul_assign(&mut self, matrix: &Matrix<T>) {
+        if let Some(result) = self.mul_matrix(matrix) {
+            *self = result;
+        }
+    }
+}
+
+impl<T: Float> ops::MulAssign<&Matrix<T>> for ColumnVector<T> {
+    fn mul_assign(&mut self, matrix: &Matrix<T>) {
+        if let Some(result) = self.mul_matrix(matrix) {
+            *self = result;
+        }
     }
 }
