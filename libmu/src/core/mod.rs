@@ -1,2 +1,1 @@
-pub mod bit;
-pub mod gate;
+pub mod component;

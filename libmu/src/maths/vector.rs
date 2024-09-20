@@ -362,14 +362,13 @@ impl<T: Float + fmt::Display> fmt::Display for RowVector<T> {
 
 impl<T: Float + fmt::Display> fmt::Display for ColumnVector<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "[{}]",
-            self.0
-                .iter()
-                .map(|x| x.to_string())
-                .collect::<Vec<String>>()
-                .join(", ")
-        )
+        write!(f, "[")?;
+        for (i, x) in self.0.iter().enumerate() {
+            if i > 0 {
+                write!(f, ",\n ")?;
+            }
+            write!(f, "{}", x)?;
+        }
+        write!(f, "]")
     }
 }

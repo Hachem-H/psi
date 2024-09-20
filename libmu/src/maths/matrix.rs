@@ -24,6 +24,7 @@ macro_rules! matrix {
     }};
 }
 
+#[derive(Clone)]
 pub struct Matrix<T: Float> {
     pub data: Vec<T>,
     pub rows: usize,
@@ -78,7 +79,7 @@ impl<T: Float> Matrix<T> {
                     for l in 0..other.cols {
                         let result_row = i * other.rows + k;
                         let result_col = j * other.cols + l;
-                        result.set(result_row, result_col, self_val * other.get(k, l))
+                        result.set(result_row, result_col, self_val.clone() * other.get(k, l));
                     }
                 }
             }

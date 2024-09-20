@@ -6,5 +6,4 @@ pub use maths::matrix::*;
 pub use maths::numeric_types::*;
 pub use maths::vector::*;
 
-pub use core::gate::*;
-pub use core::bit::*;
+pub use core::component::*;
