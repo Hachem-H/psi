@@ -1,6 +1,3 @@
-// TODO(Hachem): Operators Matrix/Vector don't work
-// TODO(Hachem): Refactor
-
 use super::{Float, Matrix};
 use core::{fmt, ops};
 
