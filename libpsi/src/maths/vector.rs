@@ -43,6 +43,7 @@ pub trait VectorMatrix<T: Float> {
     fn to_matrix(&self) -> Matrix<T>;
 }
 
+#[derive(Clone)]
 pub struct VectorImpl<T: Float, const ROWS: usize, const COLS: usize>(Vec<T>);
 pub type RowVector<T> = VectorImpl<T, 1, 0>;
 pub type ColumnVector<T> = VectorImpl<T, 0, 1>;

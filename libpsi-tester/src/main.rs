@@ -1,8 +1,10 @@
 use libpsi::*;
 
 fn main() {
-    let bit_1 = qubit![(1.0, 2.0), (1.0, 2.0)];
-    let bit_2 = qubit![(1.0, 2.0), (1.0, 2.0)];
-    let register: QuantumRegister = quantum_register![bit_1, bit_2];
-    println!("{}", register);
+    let mut register = quantum_register![qubit![(1.0, 0.0), (0.0, 0.0)]];
+    let hadamard = matrix!([Complex::one(), Complex::one()]; [Complex::one(), -Complex::one()])
+        .scale(complex!(1.0 / f64::sqrt(2.0), 0.0));
+    println!("Before:\n{}", register[0]);
+    register.apply(&hadamard, 0);
+    println!("\nAfter H Gate:\n{}", register[0]);
 }
