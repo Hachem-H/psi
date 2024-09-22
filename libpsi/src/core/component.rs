@@ -1,5 +1,5 @@
 use crate::{complex, ColumnVector, Complex, Matrix, Vector, VectorMatrix};
-use std::ops;
+use core::{fmt, ops};
 
 pub type QuantumBit = ColumnVector<Complex<f64>>;
 pub type QuantumGate = Matrix<Complex<f64>>;

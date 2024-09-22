@@ -1,5 +1,3 @@
-// TODO(Hachem): Refactor
-
 use super::Float;
 use core::{fmt, ops};
 
@@ -175,10 +173,17 @@ impl<T: Float + fmt::Debug> fmt::Debug for Matrix<T> {
 impl<T: Float + fmt::Display> fmt::Display for Matrix<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for i in 0..self.rows {
+            write!(f, "[")?;
             for j in 0..self.cols {
-                write!(f, "{:>8} ", self.get(i, j))?;
+                write!(f, "{}", self.get(i, j))?;
+                if j != self.cols - 1 {
+                    write!(f, " ")?;
+                }
             }
-            writeln!(f)?;
+            write!(f, "]")?;
+            if i != self.rows - 1 {
+                write!(f, "\n")?;
+            }
         }
         Ok(())
     }
