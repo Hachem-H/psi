@@ -1,4 +1,4 @@
-use libmu::*;
+use libpsi::*;
 
 fn main() {
     let bit_1 = qubit![(1.0, 2.0), (1.0, 2.0)];
