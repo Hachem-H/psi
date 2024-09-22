@@ -1,28 +1,4 @@
-use super::Complex;
-use core::ops;
-
-pub trait Numeric:
-    Copy
-    + PartialOrd
-    + ops::Add<Output = Self>
-    + ops::Mul<Output = Self>
-    + ops::Sub<Output = Self>
-    + ops::Div<Output = Self>
-    + ops::Neg<Output = Self>
-    + ops::AddAssign
-    + ops::SubAssign
-    + ops::MulAssign
-    + ops::DivAssign
-{
-    fn zero() -> Self;
-    fn one() -> Self;
-}
-
-pub trait Integer: Numeric {}
-pub trait Float: Numeric {
-    fn sqrt(self) -> Self;
-    fn atan2(y: Self, x: Self) -> Self;
-}
+use super::{Complex, Float};
 
 impl Float for f32 {
     fn sqrt(self) -> Self {
@@ -85,68 +61,5 @@ impl Float for Complex<f64> {
             libm::atan2(y.real, x.real),
             libm::atan2(y.imaginary, x.imaginary),
         )
-    }
-}
-
-impl Integer for i64 {}
-impl Integer for i32 {}
-
-impl Numeric for i32 {
-    fn zero() -> Self {
-        0
-    }
-
-    fn one() -> Self {
-        1
-    }
-}
-
-impl Numeric for i64 {
-    fn zero() -> Self {
-        0
-    }
-
-    fn one() -> Self {
-        1
-    }
-}
-
-impl Numeric for f32 {
-    fn zero() -> Self {
-        0.0
-    }
-
-    fn one() -> Self {
-        1.0
-    }
-}
-
-impl Numeric for f64 {
-    fn zero() -> Self {
-        0.0
-    }
-
-    fn one() -> Self {
-        1.0
-    }
-}
-
-impl Numeric for Complex<f32> {
-    fn zero() -> Self {
-        Complex::new(0.0, 0.0)
-    }
-
-    fn one() -> Self {
-        Complex::new(1.0, 0.0)
-    }
-}
-
-impl Numeric for Complex<f64> {
-    fn zero() -> Self {
-        Complex::new(0.0, 0.0)
-    }
-
-    fn one() -> Self {
-        Complex::new(1.0, 0.0)
     }
 }
