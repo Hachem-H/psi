@@ -12,7 +12,7 @@ $\psi$ is a powerful quantum computing toolkit designed for simulating quantum c
     - **`libpsi-core:maths`**: A comprehensive mathematics library featuring 32/64-bit complex numbers, vectors (both row and column), matrices, and more.
     - **`libpsi-core:core`**: Contains all core quantum components, including quantum gates, classical/quantum bits, and quantum circuits.
 - **`libpsi-visualizer`**: An extension of `libpsi-core` that offers visual representations of quantum circuits. It supports both text-based (ASCII) output in the terminal and graphical output using APIs like OpenGL and Vulkan.
-- **`qasmc`**: An [OpenQASM](https://openqasm.com/) compiler that enables you to write quantum programs, which are then compiled into native executables for classical computers using an [LLVM](https://llvm.org/) backend.
+- **`libpsi-qasmc`**: An [OpenQASM](https://openqasm.com/) compiler that enables you to write quantum programs, which are then compiled into native executables for classical computers using an [LLVM](https://llvm.org/) backend.
 - **`psi`**: A C-like programming language that integrates quantum and classical computing, making it easier to build and simulate quantum systems alongside classical ones.
 - **`psi-gui`**: A graphical interface for designing quantum circuits, allowing you to create circuits visually rather than through code. It integrates `libpsi` and `psi`.
 
