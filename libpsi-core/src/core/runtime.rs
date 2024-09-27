@@ -2,8 +2,8 @@ use super::{ClassicalRegister, QuantumBit, QuantumCircuit};
 
 #[allow(unused)]
 pub struct ExecutationData {
-    quantum_states: Vec<QuantumBit>,
-    classical_states: ClassicalRegister,
+    pub quantum_states: Vec<QuantumBit>,
+    pub classical_states: ClassicalRegister,
 }
 
 impl ExecutationData {

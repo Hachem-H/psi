@@ -1,13 +1,12 @@
 use super::{ClassicalRegister, QuantumBit, QuantumGate};
 
-#[allow(dead_code)]
-struct QuantumCircuitInstruction {
-    target_indices: Vec<usize>,
-    control_indices: Vec<usize>,
-    gate: QuantumGate,
+#[derive(Clone)]
+pub struct QuantumCircuitInstruction {
+    pub target_indices: Vec<usize>,
+    pub control_indices: Vec<usize>,
+    pub gate: QuantumGate,
 }
 
-#[allow(dead_code)]
 pub struct QuantumCircuit {
     quantum_bits: Vec<QuantumBit>,
     classical_register: ClassicalRegister,
@@ -17,7 +16,7 @@ pub struct QuantumCircuit {
 impl QuantumCircuit {
     pub fn new(quantum_bit_count: usize, classical_bit_count: usize) -> QuantumCircuit {
         QuantumCircuit {
-            quantum_bits: Vec::with_capacity(quantum_bit_count),
+            quantum_bits: vec![QuantumBit::state_0(); quantum_bit_count],
             classical_register: ClassicalRegister::new(classical_bit_count),
             instructions: Vec::new(),
         }
@@ -29,5 +28,17 @@ impl QuantumCircuit {
             target_indices: target_bits.to_vec(),
             control_indices: control_bits.to_vec(),
         });
+    }
+
+    pub fn get_quantum_bits(&self) -> Vec<QuantumBit> {
+        self.quantum_bits.clone()
+    }
+
+    pub fn get_classical_registers(&self) -> ClassicalRegister {
+        self.classical_register.clone()
+    }
+
+    pub fn get_instructions(&self) -> Vec<QuantumCircuitInstruction> {
+        self.instructions.clone()
     }
 }

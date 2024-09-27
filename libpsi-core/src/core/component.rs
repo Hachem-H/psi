@@ -1,3 +1,5 @@
+use rand::Rng;
+
 use crate::{complex, ColumnVector, Complex, Matrix, Vector, VectorMatrix};
 use core::ops;
 
@@ -34,6 +36,7 @@ macro_rules! quantum_register {
     };
 }
 
+#[derive(Clone)]
 pub struct ClassicalRegister {
     bits: Vec<i32>,
 }
@@ -51,7 +54,10 @@ impl QuantumBit {
         let alpha_norm = alpha_abs * alpha_abs;
         let beta_norm = beta_abs * beta_abs;
 
-        if alpha_norm > beta_norm {
+        let mut rng = rand::thread_rng();
+        let random_value = rng.gen_range(0.0..(alpha_norm as f32 + beta_norm as f32));
+
+        if random_value < alpha_norm as f32 {
             0
         } else {
             1
@@ -76,6 +82,10 @@ impl ClassicalRegister {
 
     pub fn set_bits(&mut self, bits: Vec<i32>) {
         self.bits = bits;
+    }
+
+    pub fn get_bits(&self) -> Vec<i32> {
+        self.bits.clone()
     }
 }
 
@@ -105,10 +115,16 @@ impl QuantumRegister {
         classical_register.set_bits(self.qubits.iter().map(|qubit| qubit.measure()).collect());
     }
 
-    pub fn apply(&mut self, gate: &QuantumGate, index: usize) {
-        let result: ColumnVector<Complex<f64>> = self.state.mul_matrix(gate).unwrap();
-        self.qubits[index] = result;
-        self.update();
+    pub fn get_bits(&self) -> Vec<QuantumBit> {
+        self.qubits.clone()
+    }
+
+    pub fn get_state(&self) -> ColumnVector<Complex<f64>> {
+        self.state.clone()
+    }
+
+    pub fn apply(&self, gate: &QuantumGate) -> QuantumBit {
+        self.state.mul_matrix(gate).unwrap()
     }
 }
 
