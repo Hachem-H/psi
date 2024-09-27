@@ -2,5 +2,6 @@
 resolver = "2"
 members = [
     "libpsi-core",
-    "libpsi-tester"
+    "libpsi-tester", 
+    "libpsi-visualizer"
 ]
