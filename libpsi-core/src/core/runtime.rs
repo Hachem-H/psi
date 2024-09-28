@@ -19,7 +19,7 @@ pub trait RuntimeBase {
     fn get_circuit(&self) -> &QuantumCircuit;
 }
 
-pub trait Runtime<T: RuntimeBase = Self> {
-    fn new(circuit: QuantumCircuit) -> Self;
+pub trait Runtime<'a, T: RuntimeBase = Self> {
+    fn new(circuit: &'a QuantumCircuit) -> Self;
     fn execute(&self, repeat: usize) -> Vec<ExecutationData>;
 }

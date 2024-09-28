@@ -4,7 +4,7 @@ use crate::{complex, ColumnVector, Complex, Matrix, Vector, VectorMatrix};
 use core::ops;
 
 pub type QuantumBit = ColumnVector<Complex<f64>>;
-pub type QuantumGate = Matrix<Complex<f64>>;
+pub type QuantumGate = (&'static str, Matrix<Complex<f64>>);
 
 #[macro_export]
 macro_rules! count {
@@ -124,7 +124,7 @@ impl QuantumRegister {
     }
 
     pub fn apply(&self, gate: &QuantumGate) -> QuantumBit {
-        self.state.mul_matrix(gate).unwrap()
+        self.state.mul_matrix(&gate.1).unwrap()
     }
 }
 

@@ -3,17 +3,17 @@ use crate::{
     Runtime, RuntimeBase, Vector,
 };
 
-pub struct BasicRT {
-    circuit: QuantumCircuit,
+pub struct BasicRT<'a> {
+    circuit: &'a QuantumCircuit,
 }
 
-impl RuntimeBase for BasicRT {
+impl<'a> RuntimeBase for BasicRT<'a> {
     fn get_circuit(&self) -> &QuantumCircuit {
         &self.circuit
     }
 }
 
-impl BasicRT {
+impl<'a> BasicRT<'a> {
     fn calculate_state(state: &ColumnVector<Complex<f64>>, n: usize) -> QuantumBit {
         let num_states = 1 << n;
         let half_states = num_states >> 1;
@@ -52,8 +52,8 @@ impl BasicRT {
     }
 }
 
-impl Runtime for BasicRT {
-    fn new(circuit: QuantumCircuit) -> BasicRT {
+impl<'a> Runtime<'a> for BasicRT<'a> {
+    fn new(circuit: &'a QuantumCircuit) -> BasicRT {
         BasicRT { circuit }
     }
 
