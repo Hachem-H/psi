@@ -1,7 +1,8 @@
 [workspace]
 resolver = "2"
 members = [
-    "libpsi-core",
-    "libpsi-tester", 
-    "libpsi-visualizer"
+    "libpsi-core", 
+    "libpsi-qasm",
+    "libpsi-visualizer",
+    "examples/*"
 ]
