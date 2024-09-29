@@ -31,15 +31,11 @@ impl<'a> Visualizer<'a> for HorizontalCLIVisualizer<'a> {
     }
 
     fn render(&mut self) {
-        self.renderer.draw_quad(Quad::new(2, 2, 2, 2), false);
-        self.renderer.draw_quad(Quad::new(5, 10, 6, 3), true);
-        self.renderer.draw_quad(Quad::new(17, 4, 17, 10), true);
-        self.renderer.draw_quad(Quad::new(15, 7, 7, 4), false);
+        let quad = Quad::new(2, 2, 5, 5);
+        let point = (10usize, 0usize);
 
-        self.renderer.draw_vline(4, 4, 5, true);
-        self.renderer.draw_hline(3, 6, 5, false);
-
-        self.renderer.draw_text(4, 15, "This is some text.");
+        self.renderer.draw_quad(quad, false);
+        self.renderer.connect(quad, point);
         println!("{}", self.renderer.to_string());
     }
 }
