@@ -12,29 +12,34 @@
    c1: ═══════════════════════════════════════════════■═════════▓
 */
 
-use crate::Visualizer;
+use crate::{renderer::*, Visualizer};
 use libpsi_core::QuantumCircuit;
 
+#[allow(unused)]
 pub struct HorizontalCLIVisualizer<'a> {
     circuit: &'a QuantumCircuit,
+    renderer: CLIRenderer,
 }
 
 impl<'a> Visualizer<'a> for HorizontalCLIVisualizer<'a> {
     fn new(circuit: &'a QuantumCircuit) -> HorizontalCLIVisualizer<'a> {
-        HorizontalCLIVisualizer { circuit }
+        let terminal_width = term_size::dimensions().unwrap().0;
+        HorizontalCLIVisualizer {
+            circuit,
+            renderer: CLIRenderer::new(terminal_width),
+        }
     }
 
-    // NOTE(Hachem): This is a temporary function
-    fn render(&self) {
-        for instruction in self.circuit.get_instructions() {
-            print!("Applied {} on ", &instruction.gate.0);
-            for bit_index in instruction.control_indices {
-                print!("q{} ", bit_index);
-            }
-            for bit_index in instruction.target_indices {
-                print!("q{} ", bit_index);
-            }
-            println!();
-        }
+    fn render(&mut self) {
+        self.renderer.draw_quad(Quad::new(2, 2, 2, 2), false);
+        self.renderer.draw_quad(Quad::new(5, 10, 6, 3), true);
+        self.renderer.draw_quad(Quad::new(17, 4, 17, 10), true);
+        self.renderer.draw_quad(Quad::new(15, 7, 7, 4), false);
+
+        self.renderer.draw_vline(4, 4, 5, true);
+        self.renderer.draw_hline(3, 6, 5, false);
+
+        self.renderer.draw_text(4, 15, "This is some text.");
+        println!("{}", self.renderer.to_string());
     }
 }

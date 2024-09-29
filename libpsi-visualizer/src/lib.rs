@@ -5,5 +5,5 @@ pub use cli::*;
 
 pub trait Visualizer<'a> {
     fn new(circuit: &'a QuantumCircuit) -> Self;
-    fn render(&self);
+    fn render(&mut self);
 }
