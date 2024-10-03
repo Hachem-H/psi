@@ -172,15 +172,36 @@ impl<T: Float + fmt::Debug> fmt::Debug for Matrix<T> {
 
 impl<T: Float + fmt::Display> fmt::Display for Matrix<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let max_width = (0..self.rows)
+            .flat_map(|i| (0..self.cols).map(move |j| self.get(i, j)))
+            .map(|x| format!("{:.2}", x).split('.').next().unwrap().len()) // Length of integer part
+            .max()
+            .unwrap_or(0);
+
         for i in 0..self.rows {
-            write!(f, "[")?;
+            if i == 0 {
+                write!(f, "┌")?;
+            } else if i == self.rows - 1 {
+                write!(f, "└")?;
+            } else {
+                write!(f, "│")?;
+            }
+
             for j in 0..self.cols {
-                write!(f, "{}", self.get(i, j))?;
+                write!(f, "{:>width$.2}", self.get(i, j), width = max_width + 3)?;
                 if j != self.cols - 1 {
                     write!(f, " ")?;
                 }
             }
-            write!(f, "]")?;
+
+            if i == 0 {
+                write!(f, "┐")?;
+            } else if i == self.rows - 1 {
+                write!(f, "┘")?;
+            } else {
+                write!(f, "│")?;
+            }
+
             if i != self.rows - 1 {
                 write!(f, "\n")?;
             }

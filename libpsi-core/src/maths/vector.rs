@@ -256,13 +256,25 @@ impl<T: Float + fmt::Display> fmt::Display for RowVector<T> {
 
 impl<T: Float + fmt::Display> fmt::Display for ColumnVector<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "[")?;
+        let max_width = self
+            .0
+            .iter()
+            .map(|x| format!("{:.2}", x).split('.').next().unwrap().len()) // Length of integer part
+            .max()
+            .unwrap_or(0);
+
         for (i, x) in self.0.iter().enumerate() {
-            if i > 0 {
-                write!(f, ",\n ")?;
+            let formatted_x = format!("{:>width$.2}", x, width = max_width + 3); // +3 for ".00"
+
+            if i == 0 {
+                write!(f, "┌{}┐\n", formatted_x)?;
+            } else if i == self.0.len() - 1 {
+                write!(f, "└{}┘\n", formatted_x)?;
+            } else {
+                write!(f, "│{}│\n", formatted_x)?;
             }
-            write!(f, "{}", x)?;
         }
-        write!(f, "]")
+
+        Ok(())
     }
 }
