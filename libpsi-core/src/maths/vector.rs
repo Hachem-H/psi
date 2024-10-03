@@ -259,12 +259,12 @@ impl<T: Float + fmt::Display> fmt::Display for ColumnVector<T> {
         let max_width = self
             .0
             .iter()
-            .map(|x| format!("{:.2}", x).split('.').next().unwrap().len()) // Length of integer part
+            .map(|x| format!("{:.2}", x).split('.').next().unwrap().len())
             .max()
             .unwrap_or(0);
 
         for (i, x) in self.0.iter().enumerate() {
-            let formatted_x = format!("{:>width$.2}", x, width = max_width + 3); // +3 for ".00"
+            let formatted_x = format!("{:>width$.2}", x, width = max_width + 3);
 
             if i == 0 {
                 write!(f, "┌{}┐\n", formatted_x)?;
