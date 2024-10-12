@@ -1,12 +1,55 @@
 use crate::Float;
-use core::fmt;
-
-use super::Numeric;
+use core::{fmt, ops};
 
 #[macro_export]
 macro_rules! complex {
     ($real:expr, $imaginary:expr) => {
         $crate::Complex::new($real, $imaginary)
+    };
+}
+
+macro_rules! impl_ops {
+    ($trait:ident, $method:ident, $op:tt) => {
+        impl<T: Float> ops::$trait for Complex<T> {
+            type Output = Complex<T>;
+
+            fn $method(self, other: Complex<T>) -> Complex<T> {
+                Complex {
+                    real: self.real $op other.real,
+                    imaginary: self.imaginary $op other.imaginary,
+                }
+            }
+        }
+    };
+
+    ($trait:ident, $method:ident, $op:tt, real) => {
+        impl<T: Float> ops::$trait<T> for Complex<T> {
+            type Output = Complex<T>;
+
+            fn $method(self, other: T) -> Complex<T> {
+                Complex {
+                    real: self.real $op other,
+                    imaginary: self.imaginary,
+                }
+            }
+        }
+    };
+
+    ($trait_assign:ident, $method_assign:ident, $op:tt, assign) => {
+        impl<T: Float> ops::$trait_assign for Complex<T> {
+            fn $method_assign(&mut self, other: Complex<T>) {
+                self.real = self.real $op other.real;
+                self.imaginary = self.imaginary $op other.imaginary;
+            }
+        }
+    };
+
+    ($trait_assign:ident, $method_assign:ident, $op:tt, assign_real) => {
+        impl<T: Float> ops::$trait_assign<T> for Complex<T> {
+            fn $method_assign(&mut self, other: T) {
+                self.real = self.real $op other;
+            }
+        }
     };
 }
 
@@ -32,23 +75,23 @@ impl<T: Float + fmt::Display> fmt::Display for Complex<T> {
     }
 }
 
-impl Numeric for Complex<f32> {
-    fn zero() -> Self {
-        Complex::new(0.0, 0.0)
-    }
+impl<T: Float> ops::Neg for Complex<T> {
+    type Output = Complex<T>;
 
-    fn one() -> Self {
-        Complex::new(1.0, 0.0)
+    fn neg(self) -> Complex<T> {
+        Complex {
+            real: -self.real,
+            imaginary: -self.imaginary,
+        }
     }
 }
 
-impl Numeric for Complex<f64> {
-    fn zero() -> Self {
-        Complex::new(0.0, 0.0)
-    }
-
-    fn one() -> Self {
-        Complex::new(1.0, 0.0)
+impl<T: Float> From<T> for Complex<T> {
+    fn from(real: T) -> Complex<T> {
+        Complex {
+            real,
+            imaginary: T::zero(),
+        }
     }
 }
 
@@ -72,11 +115,26 @@ impl<T: Float> Complex<T> {
         T::atan2(self.imaginary, self.real)
     }
 
-    pub fn norm(&self) -> T {
+    pub fn norm2(&self) -> T {
         self.real * self.real + self.imaginary * self.imaginary
     }
 
     pub fn abs(&self) -> T {
-        T::sqrt(self.norm())
+        T::sqrt(self.norm2())
     }
 }
+
+impl_ops!(Add, add, +);
+impl_ops!(Sub, sub, -);
+impl_ops!(Mul, mul, *);
+impl_ops!(Div, div, /);
+
+impl_ops!(AddAssign, add_assign, +, assign);
+impl_ops!(SubAssign, sub_assign, -, assign);
+impl_ops!(MulAssign, mul_assign, *, assign);
+impl_ops!(DivAssign, div_assign, /, assign);
+
+impl_ops!(Add, add, +, real);
+impl_ops!(Sub, sub, -, real);
+impl_ops!(Mul, mul, *, real);
+impl_ops!(Div, div, /, real);

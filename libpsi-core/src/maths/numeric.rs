@@ -17,6 +17,22 @@ macro_rules! impl_numeric {
     };
 }
 
+macro_rules! impl_cnumeric {
+    ($($t:ty),*) => {
+        $(
+            impl Numeric for Complex<$t> {
+                fn zero() -> Self {
+                    Complex::new(0.0, 0.0)
+                }
+
+                fn one() -> Self {
+                    Complex::new(1.0, 0.0)
+                }
+            }
+        )*
+    };
+}
+
 macro_rules! impl_float {
     ($($t:ty, $sqrt_fn:path, $atan2_fn:path),*) => {
         $(
@@ -33,7 +49,7 @@ macro_rules! impl_float {
     };
 }
 
-macro_rules! impl_complex {
+macro_rules! impl_cfloat {
     ($($t:ty, $sqrt_fn:path, $atan2_fn:path, $cos_fn:path, $sin_fn:path),*) => {
         $(
             impl Float for Complex<$t> {
@@ -79,10 +95,12 @@ pub trait Numeric:
 }
 
 impl_numeric!(i32, i64, f32, f64);
+impl_cnumeric!(f32, f64);
+
 impl_float!(f32, libm::sqrtf, libm::atan2f);
 impl_float!(f64, libm::sqrt, libm::atan2);
-impl_complex!(f32, libm::sqrtf, libm::atan2f, libm::cosf, libm::sinf);
-impl_complex!(f64, libm::sqrt, libm::atan2, libm::cos, libm::sin);
+impl_cfloat!(f32, libm::sqrtf, libm::atan2f, libm::cosf, libm::sinf);
+impl_cfloat!(f64, libm::sqrt, libm::atan2, libm::cos, libm::sin);
 
 pub trait Integer: Numeric {}
 pub trait Float: Numeric {
