@@ -4,7 +4,8 @@ use crate::{complex, ColumnVector, Complex, Matrix, Vector, VectorMatrix};
 use core::ops;
 
 pub type QuantumBit = ColumnVector<Complex<f64>>;
-pub type QuantumGate = (&'static str, Matrix<Complex<f64>>);
+pub type QuantumState = Matrix<Complex<f64>>;
+pub type QuantumGate = (&'static str, QuantumState);
 
 #[macro_export]
 macro_rules! count {
@@ -41,6 +42,7 @@ pub struct ClassicalRegister {
     bits: Vec<i32>,
 }
 
+#[derive(Clone)]
 pub struct QuantumRegister {
     state: ColumnVector<Complex<f64>>,
     qubits: Vec<QuantumBit>,
@@ -101,6 +103,10 @@ impl QuantumRegister {
         self.state = ColumnVector::from_matrix(&new_result);
     }
 
+    pub fn new(count: usize) -> QuantumRegister {
+        QuantumRegister::from(&mut vec![QuantumBit::state_0(); count])
+    }
+
     pub fn from(bits: &mut [QuantumBit]) -> QuantumRegister {
         let mut register = QuantumRegister {
             qubits: bits.to_vec(),
@@ -111,20 +117,12 @@ impl QuantumRegister {
         register
     }
 
-    pub fn measure(&self, classical_register: &mut ClassicalRegister) {
-        classical_register.set_bits(self.qubits.iter().map(|qubit| qubit.measure()).collect());
-    }
-
     pub fn get_bits(&self) -> Vec<QuantumBit> {
         self.qubits.clone()
     }
 
     pub fn get_state(&self) -> ColumnVector<Complex<f64>> {
         self.state.clone()
-    }
-
-    pub fn apply(&self, gate: &QuantumGate) -> QuantumBit {
-        self.state.mul_matrix(&gate.1).unwrap()
     }
 }
 

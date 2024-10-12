@@ -174,7 +174,7 @@ impl<T: Float + fmt::Display> fmt::Display for Matrix<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let max_width = (0..self.rows)
             .flat_map(|i| (0..self.cols).map(move |j| self.get(i, j)))
-            .map(|x| format!("{:.2}", x).split('.').next().unwrap().len());
+            .map(|x| format!("{:.2}", x).split('.').next().unwrap().len())
             .max()
             .unwrap_or(0);
 

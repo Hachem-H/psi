@@ -1,15 +1,15 @@
-use super::{ClassicalRegister, QuantumBit, QuantumCircuit};
+use super::{ClassicalRegister, QuantumCircuit, QuantumRegister};
 
 #[allow(unused)]
-pub struct ExecutationData {
-    pub quantum_states: Vec<QuantumBit>,
+pub struct ExecutionData {
+    pub quantum_register: QuantumRegister,
     pub classical_states: ClassicalRegister,
 }
 
-impl ExecutationData {
-    pub fn new(quantum_states: Vec<QuantumBit>, classical_states: ClassicalRegister) -> Self {
-        ExecutationData {
-            quantum_states,
+impl ExecutionData {
+    pub fn new(quantum_register: QuantumRegister, classical_states: ClassicalRegister) -> Self {
+        ExecutionData {
+            quantum_register,
             classical_states,
         }
     }
@@ -21,5 +21,5 @@ pub trait RuntimeBase {
 
 pub trait Runtime<'a, T: RuntimeBase = Self> {
     fn new(circuit: &'a QuantumCircuit) -> Self;
-    fn execute(&self, repeat: usize) -> Vec<ExecutationData>;
+    fn execute(&self, repeat: usize) -> Vec<ExecutionData>;
 }
