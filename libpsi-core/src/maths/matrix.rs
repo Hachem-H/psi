@@ -22,6 +22,29 @@ macro_rules! matrix {
     }};
 }
 
+macro_rules! impl_matrix_ops {
+    ($($trait:ident, $method:ident, $other:ty, $output:ty, $scale_fn:ident),* $(,)?) => {
+        $(
+            impl<T: Float> core::ops::$trait<$other> for Matrix<T> {
+                type Output = $output;
+
+                fn $method(self, other: $other) -> Self::Output {
+                    self.$scale_fn(other)
+                }
+            }
+        )*
+    };
+    ($($trait:ident, $method:ident, $other:ty, $scale_fn:ident),* $(,)?) => {
+        $(
+            impl<T: Float> core::ops::$trait<$other> for Matrix<T> {
+                fn $method(&mut self, other: $other) {
+                    *self = self.$scale_fn(other);
+                }
+            }
+        )*
+    };
+}
+
 #[derive(Clone)]
 pub struct Matrix<T: Float> {
     pub data: Vec<T>,
@@ -158,6 +181,34 @@ impl<T: Float> ops::IndexMut<(usize, usize)> for Matrix<T> {
     }
 }
 
+impl<T: Float> ops::AddAssign<&Matrix<T>> for Matrix<T> {
+    fn add_assign(&mut self, other: &Matrix<T>) {
+        if let Some(result) = self.add_to(other) {
+            *self = result;
+        }
+    }
+}
+
+impl<T: Float> ops::SubAssign<&Matrix<T>> for Matrix<T> {
+    fn sub_assign(&mut self, other: &Matrix<T>) {
+        if let Some(result) = self.subtract(other) {
+            *self = result;
+        }
+    }
+}
+
+impl_matrix_ops! {
+    Add, add, &Matrix<T>, Option<Matrix<T>>, add_to,
+    Sub, sub, &Matrix<T>, Option<Matrix<T>>, subtract,
+    Mul, mul, T, Matrix<T>, scale,
+    Div, div, T, Matrix<T>, scale,
+}
+
+impl_matrix_ops! {
+    MulAssign, mul_assign, T, scale,
+    DivAssign, div_assign, T, scale,
+}
+
 impl<T: Float + fmt::Debug> fmt::Debug for Matrix<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for i in 0..self.rows {
@@ -172,11 +223,58 @@ impl<T: Float + fmt::Debug> fmt::Debug for Matrix<T> {
 
 impl<T: Float + fmt::Display> fmt::Display for Matrix<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let max_width = (0..self.rows)
-            .flat_map(|i| (0..self.cols).map(move |j| self.get(i, j)))
-            .map(|x| format!("{:.2}", x).split('.').next().unwrap().len())
-            .max()
-            .unwrap_or(0);
+        let elements: Vec<String> = self.data.iter().map(ToString::to_string).collect();
+        let is_complex = elements.iter().any(|element| element.contains("i"));
+
+        let normalized: Vec<(f64, f64)> = self
+            .data
+            .iter()
+            .map(|element| {
+                let element_string = format!("{}", element);
+
+                if is_complex {
+                    let element_string = element_string.trim_end_matches('i').trim();
+                    let element_split: Vec<&str> = element_string.split_whitespace().collect();
+                    let real = element_split[0].parse::<f64>().unwrap();
+                    let imaginary = element_split
+                        .get(2)
+                        .map_or(0.0, |&s| s.parse::<f64>().unwrap());
+                    (real, imaginary)
+                } else {
+                    (element_string.parse::<f64>().unwrap(), 0.0)
+                }
+            })
+            .collect();
+
+        let max_widths = normalized
+            .iter()
+            .fold((0, 0), |(max_0, max_1), &(real, imag)| {
+                let new_max_0 = max_0.max(format!("{:.2}", real).len());
+                let new_max_1 = if is_complex {
+                    max_1.max(format!("{:.2}", imag.abs()).len())
+                } else {
+                    max_1
+                };
+                (new_max_0, new_max_1)
+            });
+
+        let aligned: Vec<String> = normalized
+            .iter()
+            .map(|&(real, imag)| {
+                if is_complex {
+                    format!(
+                        "{:>rewidth$.2} {} {:>imwidth$.2}i",
+                        real,
+                        if imag > 0.0 { "+" } else { "-" },
+                        imag.abs(),
+                        rewidth = max_widths.0,
+                        imwidth = max_widths.1,
+                    )
+                } else {
+                    format!("{:>width$.2}", real, width = max_widths.0)
+                }
+            })
+            .collect();
 
         for i in 0..self.rows {
             if i == 0 {
@@ -188,9 +286,9 @@ impl<T: Float + fmt::Display> fmt::Display for Matrix<T> {
             }
 
             for j in 0..self.cols {
-                write!(f, "{:>width$.2}", self.get(i, j), width = max_width + 3)?;
+                write!(f, "{}", aligned[i + j * self.rows])?;
                 if j != self.cols - 1 {
-                    write!(f, " ")?;
+                    write!(f, ", ")?;
                 }
             }
 
@@ -206,6 +304,7 @@ impl<T: Float + fmt::Display> fmt::Display for Matrix<T> {
                 write!(f, "\n")?;
             }
         }
+
         Ok(())
     }
 }

@@ -19,17 +19,10 @@ macro_rules! impl_numeric {
 
 macro_rules! impl_cnumeric {
     ($($t:ty),*) => {
-        $(
-            impl Numeric for Complex<$t> {
-                fn zero() -> Self {
-                    Complex::new(0.0, 0.0)
-                }
-
-                fn one() -> Self {
-                    Complex::new(1.0, 0.0)
-                }
-            }
-        )*
+        $(impl Numeric for Complex<$t> {
+            fn zero() -> Self { Complex::new(0.0, 0.0) }
+            fn one() -> Self { Complex::new(1.0, 0.0) }
+        })*
     };
 }
 
@@ -96,7 +89,6 @@ pub trait Numeric:
 
 impl_numeric!(i32, i64, f32, f64);
 impl_cnumeric!(f32, f64);
-
 impl_float!(f32, libm::sqrtf, libm::atan2f);
 impl_float!(f64, libm::sqrt, libm::atan2);
 impl_cfloat!(f32, libm::sqrtf, libm::atan2f, libm::cosf, libm::sinf);
