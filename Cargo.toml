@@ -4,5 +4,4 @@ members = [
     "libpsi-core", 
     "libpsi-qasm",
     "libpsi-visualizer",
-    "examples/*"
 ]

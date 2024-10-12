@@ -1,8 +1,0 @@
-[package]
-name = "visualizers"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-libpsi-core = { path = "../../libpsi-core" }
-libpsi-visualizer = { path = "../../libpsi-visualizer" }
