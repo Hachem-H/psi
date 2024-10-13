@@ -1,11 +1,25 @@
-use rand::Rng;
-
 use crate::{complex, ColumnVector, Complex, Matrix, Vector, VectorMatrix};
-use core::ops;
+use core::{fmt, ops};
 
-pub type QuantumBit = ColumnVector<Complex<f64>>;
-pub type QuantumState = Matrix<Complex<f64>>;
-pub type QuantumGate = (&'static str, QuantumState);
+pub type QuantumState = ColumnVector<Complex<f64>>;
+pub type QuantumBit = QuantumState;
+
+#[derive(Clone)]
+pub struct QuantumGate {
+    pub name: &'static str,
+    pub matrix: Matrix<Complex<f64>>,
+}
+
+#[derive(Clone)]
+pub struct ClassicalRegister {
+    bits: Vec<i32>,
+}
+
+#[derive(Clone)]
+pub struct QuantumRegister {
+    state_vector: QuantumState,
+    qubits: Vec<QuantumBit>,
+}
 
 #[macro_export]
 macro_rules! count {
@@ -37,41 +51,19 @@ macro_rules! quantum_register {
     };
 }
 
-#[derive(Clone)]
-pub struct ClassicalRegister {
-    bits: Vec<i32>,
-}
-
-#[derive(Clone)]
-pub struct QuantumRegister {
-    state: ColumnVector<Complex<f64>>,
-    qubits: Vec<QuantumBit>,
-}
-
 impl QuantumBit {
-    pub fn measure(&self) -> i32 {
-        let alpha_abs = self[0].abs();
-        let beta_abs = self[1].abs();
-
-        let alpha_norm = alpha_abs * alpha_abs;
-        let beta_norm = beta_abs * beta_abs;
-
-        let mut rng = rand::thread_rng();
-        let random_value = rng.gen_range(0.0..(alpha_norm as f32 + beta_norm as f32));
-
-        if random_value < alpha_norm as f32 {
-            0
-        } else {
-            1
-        }
-    }
-
     pub fn state_0() -> QuantumBit {
         QuantumBit::new(vec![complex!(1.0, 0.0), complex!(0.0, 0.0)])
     }
 
     pub fn state_1() -> QuantumBit {
         QuantumBit::new(vec![complex!(0.0, 0.0), complex!(1.0, 0.0)])
+    }
+}
+
+impl fmt::Display for QuantumGate {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.name)
     }
 }
 
@@ -100,7 +92,7 @@ impl QuantumRegister {
             new_result = new_result.kronecker(matrix);
         }
 
-        self.state = ColumnVector::from_matrix(&new_result);
+        self.state_vector = ColumnVector::from_matrix(&new_result);
     }
 
     pub fn new(count: usize) -> QuantumRegister {
@@ -110,7 +102,7 @@ impl QuantumRegister {
     pub fn from(bits: &mut [QuantumBit]) -> QuantumRegister {
         let mut register = QuantumRegister {
             qubits: bits.to_vec(),
-            state: ColumnVector::new(vec![]),
+            state_vector: ColumnVector::new(vec![]),
         };
 
         register.update();
@@ -121,8 +113,8 @@ impl QuantumRegister {
         self.qubits.clone()
     }
 
-    pub fn get_state(&self) -> ColumnVector<Complex<f64>> {
-        self.state.clone()
+    pub fn get_state(&self) -> QuantumState {
+        self.state_vector.clone()
     }
 }
 

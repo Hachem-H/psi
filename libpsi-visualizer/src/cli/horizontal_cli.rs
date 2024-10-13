@@ -12,13 +12,21 @@
    c1: ═══════════════════════════════════════════════■═════════▓
 */
 
+use core::fmt;
+
 use crate::{renderer::*, Visualizer};
 use libpsi_core::QuantumCircuit;
 
 #[allow(unused)]
 pub struct HorizontalCLIVisualizer<'a> {
-    circuit: &'a QuantumCircuit,
+    circuit: &'a QuantumCircuit<'a>,
     renderer: CLIRenderer,
+}
+
+impl<'a> fmt::Display for HorizontalCLIVisualizer<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.renderer.to_string())
+    }
 }
 
 impl<'a> Visualizer<'a> for HorizontalCLIVisualizer<'a> {
@@ -31,11 +39,6 @@ impl<'a> Visualizer<'a> for HorizontalCLIVisualizer<'a> {
     }
 
     fn render(&mut self) {
-        let quad = Quad::new(2, 2, 5, 5);
-        let point = (10usize, 0usize);
-
-        self.renderer.draw_quad(quad, false);
-        self.renderer.connect(quad, point);
-        println!("{}", self.renderer.to_string());
+        println!("{}", self);
     }
 }

@@ -1,0 +1,9 @@
+[package]
+name = "tester"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libpsi-core ={ path = "../libpsi-core"}
+libpsi-qasm ={ path = "../libpsi-qasm"}
+libpsi-visualizer ={ path = "../libpsi-visualizer"}

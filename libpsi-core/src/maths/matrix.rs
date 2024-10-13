@@ -230,7 +230,7 @@ impl<T: Float + fmt::Display> fmt::Display for Matrix<T> {
             .data
             .iter()
             .map(|element| {
-                let element_string = format!("{}", element);
+                let element_string = element.to_string();
 
                 if is_complex {
                     let element_string = element_string.trim_end_matches('i').trim();

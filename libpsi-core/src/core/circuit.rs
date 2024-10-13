@@ -1,20 +1,19 @@
 use super::{ClassicalRegister, QuantumGate, QuantumRegister};
 
 #[derive(Clone)]
-pub struct QuantumCircuitInstruction {
-    pub target_bit: usize,
-    pub control_indices: Vec<usize>,
-    pub gate: QuantumGate,
+pub enum Instruction<'a> {
+    ApplyGate(&'a QuantumGate, &'a [usize], usize),
+    Measure(usize),
 }
 
-pub struct QuantumCircuit {
+pub struct QuantumCircuit<'a> {
     quantum_register: QuantumRegister,
     classical_register: ClassicalRegister,
-    instructions: Vec<QuantumCircuitInstruction>,
+    instructions: Vec<Instruction<'a>>,
 }
 
-impl QuantumCircuit {
-    pub fn new(quantum_bit_count: usize, classical_bit_count: usize) -> QuantumCircuit {
+impl<'a> QuantumCircuit<'a> {
+    pub fn new(quantum_bit_count: usize, classical_bit_count: usize) -> QuantumCircuit<'a> {
         QuantumCircuit {
             quantum_register: QuantumRegister::new(quantum_bit_count),
             classical_register: ClassicalRegister::new(classical_bit_count),
@@ -22,12 +21,8 @@ impl QuantumCircuit {
         }
     }
 
-    pub fn apply(&mut self, gate: &QuantumGate, control_bits: &[usize], target_bit: usize) {
-        self.instructions.push(QuantumCircuitInstruction {
-            gate: gate.clone(),
-            target_bit,
-            control_indices: control_bits.to_vec(),
-        });
+    pub fn execute(&mut self, instruction: Instruction<'a>) {
+        self.instructions.push(instruction);
     }
 
     pub fn get_quantum_register(&self) -> QuantumRegister {
@@ -38,7 +33,7 @@ impl QuantumCircuit {
         self.classical_register.clone()
     }
 
-    pub fn get_instructions(&self) -> Vec<QuantumCircuitInstruction> {
+    pub fn get_instructions(&self) -> Vec<Instruction> {
         self.instructions.clone()
     }
 }

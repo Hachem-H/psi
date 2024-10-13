@@ -33,10 +33,11 @@ pub trait Vector<T: Float> {
     fn max(&self) -> T;
     fn min(&self) -> T;
     fn sum(&self) -> T;
+
+    fn from_matrix(matrix: &Matrix<T>) -> Self;
 }
 
 pub trait VectorMatrix<T: Float> {
-    fn from_matrix(matrix: &Matrix<T>) -> Self;
     fn to_matrix(&self) -> Matrix<T>;
 }
 
@@ -97,23 +98,19 @@ impl<T: Float> VectorMatrix<T> for RowVector<T> {
     fn to_matrix(&self) -> Matrix<T> {
         Matrix::new(1, self.size(), self.0.clone())
     }
-
-    fn from_matrix(matrix: &Matrix<T>) -> Self {
-        Self::new(matrix.data.clone())
-    }
 }
 
 impl<T: Float> VectorMatrix<T> for ColumnVector<T> {
     fn to_matrix(&self) -> Matrix<T> {
         Matrix::new(self.size(), 1, self.0.clone())
     }
-
-    fn from_matrix(matrix: &Matrix<T>) -> Self {
-        Self::new(matrix.data.clone())
-    }
 }
 
 impl<T: Float, const ROWS: usize, const COLS: usize> Vector<T> for VectorImpl<T, ROWS, COLS> {
+    fn from_matrix(matrix: &Matrix<T>) -> Self {
+        Self::new(matrix.data.clone())
+    }
+
     fn new(data: Vec<T>) -> Self {
         Self(data)
     }
@@ -256,25 +253,6 @@ impl<T: Float + fmt::Display> fmt::Display for RowVector<T> {
 
 impl<T: Float + fmt::Display> fmt::Display for ColumnVector<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let max_width = self
-            .0
-            .iter()
-            .map(|x| format!("{:.2}", x).split('.').next().unwrap().len())
-            .max()
-            .unwrap_or(0);
-
-        for (i, x) in self.0.iter().enumerate() {
-            let formatted_x = format!("{:>width$.2}", x, width = max_width + 3);
-
-            if i == 0 {
-                write!(f, "┌{}┐\n", formatted_x)?;
-            } else if i == self.0.len() - 1 {
-                write!(f, "└{}┘\n", formatted_x)?;
-            } else {
-                write!(f, "│{}│\n", formatted_x)?;
-            }
-        }
-
-        Ok(())
+        write!(f, "{}", self.to_matrix())
     }
 }
