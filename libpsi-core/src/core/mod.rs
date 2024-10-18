@@ -1,9 +1,9 @@
 pub mod circuit;
-pub mod component;
+pub mod classical_components;
 pub mod gates;
-pub mod runtime;
+pub mod quantum_components;
 
 pub use circuit::*;
-pub use component::*;
+pub use classical_components::*;
 pub use gates::*;
-pub use runtime::*;
+pub use quantum_components::*;
